@@ -1,0 +1,6 @@
+# IDE/Editor lint
+.idea
+.php_cs.cache
+
+# Other
+.DS_Store
