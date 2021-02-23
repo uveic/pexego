@@ -466,7 +466,7 @@ document.querySelectorAll('.pexego-add-section-title').forEach(bu => {
 
     let pexegoSectionTitle = document.createElement('h1');
     pexegoSectionTitle.className = classes.contentTitle + ' placeholder';
-    pexegoSectionTitle.dataset.placeholder = global.get('editorTitlePlaceholder') + '...';
+    pexegoSectionTitle.dataset.placeholder = global.get('editorTitlePlaceholder');
     pexegoSectionTitle.contentEditable = 'true';
 
     pexegoSectionWrapper.appendChild(pexegoSectionTitle);
@@ -489,7 +489,7 @@ document.querySelectorAll('.pexego-add-section-subtitle').forEach(bu => {
 
     let pexegoSectionSubtitle = document.createElement('h2');
     pexegoSectionSubtitle.className = classes.contentSubtitle + ' placeholder';
-    pexegoSectionSubtitle.dataset.placeholder = global.get('editorSubtitlePlaceholder') + '...';
+    pexegoSectionSubtitle.dataset.placeholder = global.get('editorSubtitlePlaceholder');
     pexegoSectionSubtitle.contentEditable = 'true';
 
     pexegoSectionWrapper.appendChild(pexegoSectionSubtitle);
@@ -566,7 +566,7 @@ document.querySelectorAll('input[name="pexego-add-image-input"]').forEach(pi => 
 
         let imageCaption = document.createElement('p');
         imageCaption.className = 'placeholder ' + classes.sectionImageCaption;
-        imageCaption.dataset.placeholder = global.get('editorTitlePlaceholder');
+        imageCaption.dataset.placeholder = global.get('editorImageCaptionPlaceholder');
         imageCaption.contentEditable = 'true';
 
         let image = new Image();

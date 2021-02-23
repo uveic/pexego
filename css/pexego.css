@@ -1,7 +1,8 @@
 :root {
   --primary-color: #212529;
-
   --primary-bg-color: #fcfcfc;
+  --light-bg-color-2: #e8e8e8;
+  --light-bg-color-3: #a6a6a6;
 
   --highlight-color: #0432ff;
   --border-color: #a6a6a6;
@@ -11,6 +12,10 @@
 *, *:before, *:after {
   box-sizing: border-box;
   outline: none;
+}
+
+.pexego-container {
+  padding: 2rem 1rem;
 }
 
 .pexego-content-paragraph {
@@ -26,18 +31,20 @@
 
 .pexego-content-title {
   margin: 0;
-  padding: 0 1rem;
+  padding: 0.7rem 1rem;
   font-size: 1.5rem;
   font-weight: bold;
-  line-height: 2rem;
+  line-height: 1.3;
+  border: 1px solid transparent;
 }
 
 .pexego-content-subtitle {
   margin: 0;
-  padding: 1rem;
+  padding: 0.7rem 1rem;
   font-size: 1.2rem;
   font-weight: bold;
-  line-height: 1.4rem;
+  line-height: 1.3;
+  border: 1px solid transparent;
 }
 
 .pexego-content-title:focus,
