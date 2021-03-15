@@ -116,6 +116,10 @@ const classes = {
   container: 'pexego-container',
   section: 'pexego-section',
   sectionControls: 'pexego-section-controls',
+  sectionControlsButton: 'pexego-section-button',
+  sectionControlsButtonUp: 'pexego-section-button-up',
+  sectionControlsButtonDown: 'pexego-section-button-down',
+  sectionControlsButtonDelete: 'pexego-section-button-delete',
   sectionWrapper: 'pexego-section-wrapper',
   sectionTitle: 'pexego-section-title',
   sectionSubtitle: 'pexego-section-subtitle',
@@ -366,8 +370,8 @@ const generateSectionWrapperFor = function(pexegoSectionElement, id) {
 
   let deleteButton = document.createElement('a');
   deleteButton.href = '#';
-  deleteButton.id = 'pexego-section-button-delete-' + id;
-  deleteButton.className = 'pexego-section-button pexego-section-button-delete';
+  deleteButton.id = classes.sectionControlsButtonDelete + '-' + id;
+  deleteButton.className = classes.sectionControlsButton + ' ' + classes.sectionControlsButtonDelete;
   deleteButton.addEventListener('click', e => removeSection(e, id));
   deleteButton.appendChild(trashImg);
 
@@ -379,8 +383,8 @@ const generateSectionWrapperFor = function(pexegoSectionElement, id) {
 
   let moveUpButton = document.createElement('a');
   moveUpButton.href = '#';
-  moveUpButton.id = 'pexego-section-button-up-' + id;
-  moveUpButton.className = 'pexego-section-button pexego-section-button-up';
+  moveUpButton.id = classes.sectionControlsButtonUp + '-' + id;
+  moveUpButton.className = classes.sectionControlsButton + ' ' + classes.sectionControlsButtonUp;
   moveUpButton.addEventListener('click', e => moveSectionUp(e, id));
   moveUpButton.appendChild(arrowUpImg);
 
@@ -392,21 +396,21 @@ const generateSectionWrapperFor = function(pexegoSectionElement, id) {
 
   let moveDownButton = document.createElement('a');
   moveDownButton.href = '#';
-  moveDownButton.id = 'pexego-section-button-down-' + id;
-  moveDownButton.className = 'pexego-section-button pexego-section-button-down';
+  moveDownButton.id = classes.sectionControlsButtonDown + '-' + id;
+  moveDownButton.className = classes.sectionControlsButton + ' ' + classes.sectionControlsButtonDown;
   moveDownButton.addEventListener('click', e => moveSectionDown(e, id));
   moveDownButton.appendChild(arrowDownImg);
 
-  let sectionControls = document.createElement('div');
-  sectionControls.id = 'pexego-section-controls-' + id;
-  sectionControls.className = 'pexego-section-controls';
+  let sectionControlDiv = document.createElement('div');
+  sectionControlDiv.id = classes.sectionControls + '-' + id;
+  sectionControlDiv.className = classes.sectionControls + ' null';
 
-  sectionControls.appendChild(moveUpButton);
-  sectionControls.appendChild(moveDownButton);
-  sectionControls.appendChild(deleteButton);
+  sectionControlDiv.appendChild(moveUpButton);
+  sectionControlDiv.appendChild(moveDownButton);
+  sectionControlDiv.appendChild(deleteButton);
 
   sectionWrapper.appendChild(pexegoSectionElement);
-  sectionWrapper.appendChild(sectionControls);
+  sectionWrapper.appendChild(sectionControlDiv);
 
   pexegoContent.appendChild(sectionWrapper);
 
@@ -414,7 +418,7 @@ const generateSectionWrapperFor = function(pexegoSectionElement, id) {
 };
 
 const displayUpAndDownArrowsWhenAppropriate = function() {
-  let arrowDownAll = document.querySelectorAll('.pexego-section-button-down');
+  let arrowDownAll = document.querySelectorAll('.' + classes.sectionControlsButtonDown);
   let count = 0;
 
   arrowDownAll.forEach(d => {
@@ -426,7 +430,7 @@ const displayUpAndDownArrowsWhenAppropriate = function() {
     count++;
   });
 
-  let arrowUpAll = document.querySelectorAll('.pexego-section-button-up');
+  let arrowUpAll = document.querySelectorAll('.' + classes.sectionControlsButtonUp);
 
   count = 0;
   arrowUpAll.forEach(u => {
@@ -606,18 +610,37 @@ document.querySelectorAll('.placeholder').forEach(el => {
   el.addEventListener('focus', managePlaceholderForEditableElements);
 })
 
-document.querySelectorAll('.pexego-section-button-delete').forEach(el => {
+document.querySelectorAll('.' + classes.sectionControlsButtonDelete).forEach(el => {
   el.addEventListener('click', e => removeSection(e, el.parentNode.parentNode.dataset.sectionId));
 });
 
-document.querySelectorAll('.pexego-section-button-up').forEach(el => {
+document.querySelectorAll('.' + classes.sectionControlsButtonUp).forEach(el => {
   el.addEventListener('click', e => moveSectionUp(e, el.parentNode.parentNode.dataset.sectionId));
 });
 
-document.querySelectorAll('.pexego-section-button-down').forEach(el => {
+document.querySelectorAll('.' + classes.sectionControlsButtonDown).forEach(el => {
   el.addEventListener('click', e => moveSectionDown(e, el.parentNode.parentNode.dataset.sectionId));
 });
 
 document.querySelectorAll('.' + classes.sectionParagraph).forEach(s => loadEditor(s.id));
+
+document.querySelectorAll('.pexego-section-controls-button').forEach(bu => {
+  bu.addEventListener('click', e => {
+    e.preventDefault();
+
+    document.querySelectorAll('.' + classes.sectionControls).forEach(c => {
+      c.classList.toggle('null');
+    });
+  });
+});
+
+document.querySelectorAll('.pexego-preview').forEach(bu => {
+  bu.addEventListener('click', e => {
+    e.preventDefault();
+
+    document.querySelector('header').classList.toggle('null');
+    document.querySelector('.pexego-add-sections').classList.toggle('null');
+  });
+});
 
 export {classes, getSectionTypeIdFromClassList};

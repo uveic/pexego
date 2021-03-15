@@ -22,7 +22,7 @@
   font-family: inherit;
   height: auto;
   padding: 0 1rem;
-  min-height: 150px;
+  min-height: 55px;
   border: 1px solid transparent;
 }
 
@@ -194,6 +194,7 @@ svg,
   margin: 0;
 }
 
+.m-l-05 {margin-left: 0.5rem !important;}
 .m-r-05 {margin-right: 0.5rem !important;}
 .null {display: none !important;}
 .no-border {border: none;}
