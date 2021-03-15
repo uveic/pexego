@@ -1,4 +1,5 @@
 import {global} from "./localisation.js";
+import {uploadImage} from "./imageUploader.js";
 
 const userFeedbackBubble = document.querySelector('#feedback');
 const defaultParagraphSeparatorString = 'defaultParagraphSeparator';
@@ -106,7 +107,7 @@ const defaultActions = {
   }
 };
 
-export const classes = {
+const classes = {
   actionBar: 'pexego-actionbar',
   actionBarLeft: 'pexego-actionbar-left',
   actionBarRight: 'pexego-actionbar-right',
@@ -114,6 +115,7 @@ export const classes = {
   actionBarButtonSelected: 'pexego-button-selected',
   container: 'pexego-container',
   section: 'pexego-section',
+  sectionControls: 'pexego-section-controls',
   sectionWrapper: 'pexego-section-wrapper',
   sectionTitle: 'pexego-section-title',
   sectionSubtitle: 'pexego-section-subtitle',
@@ -143,17 +145,6 @@ const init = function(settings) {
 
   const defaultParagraphSeparator = settings[defaultParagraphSeparatorString] || 'div';
 
-  const actionbarWrapper = createElement('div');
-  actionbarWrapper.className = classes.actionBar;
-
-  const actionbarLeft = createElement('div');
-  actionbarLeft.className = classes.actionBarLeft;
-  appendChild(actionbarWrapper, actionbarLeft);
-  const actionbarRight = createElement('div');
-  actionbarRight.className = classes.actionBarRight;
-  appendChild(actionbarWrapper, actionbarRight);
-  appendChild(settings.element, actionbarWrapper);
-
   let content = settings.element.querySelector('.' + classes.contentParagraph);
   if (!content) {
     let content = document.createElement('div');
@@ -176,6 +167,17 @@ const init = function(settings) {
     }
   };
   appendChild(settings.element, content);
+
+  const actionbarWrapper = createElement('div');
+  actionbarWrapper.className = classes.actionBar;
+
+  const actionbarLeft = createElement('div');
+  actionbarLeft.className = classes.actionBarLeft;
+  appendChild(actionbarWrapper, actionbarLeft);
+  const actionbarRight = createElement('div');
+  actionbarRight.className = classes.actionBarRight;
+  appendChild(actionbarWrapper, actionbarRight);
+  appendChild(settings.element, actionbarWrapper);
 
   actions.forEach(action => {
     const button = createElement('button');
@@ -231,6 +233,30 @@ const loadEditor = (containerId) => {
     ]
   });
 }
+
+const getSectionTypeIdFromClassList = function(classList) {
+  if (classList.contains(classes.sectionParagraph)) {
+    return 1;
+  }
+
+  if (classList.contains(classes.sectionImage)) {
+    return 2;
+  }
+
+  if (classList.contains(classes.sectionVideo)) {
+    return 3;
+  }
+
+  if (classList.contains(classes.sectionTitle)) {
+    return 4;
+  }
+
+  if (classList.contains(classes.sectionSubtitle)) {
+    return 5;
+  }
+
+  return 0;
+};
 
 const generateRandomString = function(length = 10) {
   const dec2hex = function (dec) {
@@ -372,6 +398,7 @@ const generateSectionWrapperFor = function(pexegoSectionElement, id) {
   moveDownButton.appendChild(arrowDownImg);
 
   let sectionControls = document.createElement('div');
+  sectionControls.id = 'pexego-section-controls-' + id;
   sectionControls.className = 'pexego-section-controls';
 
   sectionControls.appendChild(moveUpButton);
@@ -542,97 +569,35 @@ document.querySelectorAll('input[name="pexego-add-image-input"]').forEach(pi => 
   pi.addEventListener('change', e => {
     e.preventDefault();
 
-    const pexegoContentDiv = document.querySelector('.' + classes.container);
-    const files = pi.files;
-    const pexegoIdInput = document.querySelector('input[name="articleId"]');
+    for (let i = 0; i < pi.files.length; i++) {
+      let file = pi.files[i];
 
-    for (let i = 0; i < files.length; i++) {
-      let formData = new FormData();
-      let file = files[i]
+      let id = generateRandomString(5);
+      let pexegoSectionImage = document.createElement('section');
+      pexegoSectionImage.className =  classes.section + ' ' + classes.sectionImage;
 
-      if (!/\.(jpe?g|png|gif|webp)$/i.test(file.name)) {
-        return alert(file.name + ' ' + global.get('feedbackErrorNotAnImage'));
-      }
+      let imageCaption = document.createElement('p');
+      imageCaption.className = 'placeholder ' + classes.contentImageCaption;
+      imageCaption.dataset.placeholder = global.get('editorImageCaptionPlaceholder');
+      imageCaption.contentEditable = 'true';
+      imageCaption.addEventListener('focus', managePlaceholderForEditableElements);
 
-      formData.append('files[]', file);
-      formData.append('pexegoId', pexegoIdInput ? Number.parseInt(pexegoIdInput.value) : null);
+      generateSectionWrapperFor(pexegoSectionImage, id);
 
-      const reader = new FileReader();
-      reader.addEventListener('load', function () {
-        let id = generateRandomString(5);
-
-        let pexegoSectionImage = document.createElement('section');
-        pexegoSectionImage.className =  classes.section + ' ' + classes.sectionImage;
-
-        let imageCaption = document.createElement('p');
-        imageCaption.className = 'placeholder ' + classes.contentImageCaption;
-        imageCaption.dataset.placeholder = global.get('editorImageCaptionPlaceholder');
-        imageCaption.contentEditable = 'true';
-
-        let image = new Image();
-        image.className = 'opacity pexego-image';
-        image.src = String(reader.result);
-
-        let imgLoading = new Image();
-        imgLoading.className = 'justify-center';
-        imgLoading.alt = global.get('globalLoading');
-        imgLoading.src = '/img/loading.gif';
-
-        pexegoSectionImage.appendChild(image);
-        pexegoSectionImage.appendChild(imgLoading);
-        pexegoSectionImage.appendChild(imageCaption);
-
-        generateSectionWrapperFor(pexegoSectionImage, id);
-
-        const pPlaceholders = document.querySelectorAll('.placeholder');
-        pPlaceholders[pPlaceholders.length - 1]
-          .addEventListener('focus', managePlaceholderForEditableElements);
-
-        fetch(
-          '/api/image',
-          {
-            method: 'POST',
-            body: formData
+      uploadImage(
+        file,
+        pexegoSectionImage,
+        classes.contentImage,
+        userFeedbackBubble,
+        () => {pexegoSectionImage.appendChild(imageCaption)},
+        () => {
+          const pexegoContentDiv = document.querySelector('.' + classes.container);
+          const sectionWrapper = document.querySelector('#' + classes.sectionWrapper + '-' + id);
+          if (pexegoContentDiv && sectionWrapper) {
+            pexegoContentDiv.removeChild(sectionWrapper);
           }
-        ).then(response => {
-          if (!response.ok) {
-            throw new Error(response.status + ': ' + response.statusText);
-          }
-
-          try {
-            return response.json();
-          } catch (error) {
-            throw new Error(error.message);
-          }
-        })
-          .then(data => {
-            if (!data.success || !data.images || data.images.length <= 0) {
-              throw new Error(
-                data.errorMessage ?? global.get('genericError') + ': ' + image.src
-              );
-            }
-
-            data.images.forEach((i) => {
-              image.classList.remove('opacity');
-              image.src = i.url;
-              image.dataset.imageId = i.id;
-              image.alt = i.caption ?? '';
-              pexegoSectionImage.removeChild(imgLoading);
-            });
-          }).catch((error) => {
-          pexegoContentDiv.removeChild(pexegoSectionImage);
-          if (userFeedbackBubble) {
-            userFeedbackBubble.textContent = error.message;
-            userFeedbackBubble.classList.remove('feedback-success');
-            userFeedbackBubble.classList.add('feedback-error');
-            userFeedbackBubble.classList.remove('null');
-            setTimeout(() => {
-              userFeedbackBubble.classList.add('null')
-            }, 5000);
-          }
-        });
-      });
-      reader.readAsDataURL(file);
+        }
+      );
     }
   });
 });
@@ -654,3 +619,5 @@ document.querySelectorAll('.pexego-section-button-down').forEach(el => {
 });
 
 document.querySelectorAll('.' + classes.sectionParagraph).forEach(s => loadEditor(s.id));
+
+export {classes, getSectionTypeIdFromClassList};

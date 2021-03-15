@@ -15,6 +15,7 @@
 }
 
 .pexego-content-paragraph {
+  order: 2;
   box-sizing: border-box;
   outline: 0;
   overflow-y: auto;
@@ -45,6 +46,7 @@
 
 .pexego-content-image {
   min-height: 200px;
+  margin-top: 1rem;
 }
 
 .pexego-content-image-caption {
@@ -62,11 +64,11 @@
   border: 1px solid var(--highlight-color);
 }
 
-.pexego-actionbar{
-  border: 1px solid var(--border-color);
+.pexego-actionbar {
+  order: 1;
+  border: 1px solid var(--highlight-color);
   border-bottom: none;
-  display: flex;
-  margin-top: 1rem;
+  display: none;
 }
 
 .pexego-actionbar-right,
@@ -100,6 +102,10 @@
   background-color: var(--light-bg-color);
 }
 
+.pexego-content-paragraph:focus + .pexego-actionbar {
+  display: flex;
+}
+
 .pexego-add-sections {
   padding: 2rem;
   display: flex;
@@ -127,6 +133,7 @@
   border: none;
   margin: 0.5rem;
   width: auto;
+  text-align: left;
 }
 
 .pexego-add-section:hover {
@@ -135,6 +142,8 @@
 
 .pexego-section {
   flex-grow: 1;
+  display: flex;
+  flex-flow: column nowrap;
 }
 
 .pexego-section-wrapper {
