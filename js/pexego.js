@@ -120,11 +120,11 @@ export const classes = {
   sectionParagraph: 'pexego-section-paragraph',
   sectionImage: 'pexego-section-image',
   sectionVideo: 'pexego-section-video',
-  sectionImageCaption: 'pexego-section-image-caption',
   contentTitle: 'pexego-content-title',
   contentSubtitle: 'pexego-content-subtitle',
   contentParagraph: 'pexego-content-paragraph',
-  contentImage: 'pexego-content-image'
+  contentImage: 'pexego-content-image',
+  contentImageCaption: 'pexego-content-image-caption'
 };
 
 const init = function(settings) {
@@ -565,7 +565,7 @@ document.querySelectorAll('input[name="pexego-add-image-input"]').forEach(pi => 
         pexegoSectionImage.className =  classes.section + ' ' + classes.sectionImage;
 
         let imageCaption = document.createElement('p');
-        imageCaption.className = 'placeholder ' + classes.sectionImageCaption;
+        imageCaption.className = 'placeholder ' + classes.contentImageCaption;
         imageCaption.dataset.placeholder = global.get('editorImageCaptionPlaceholder');
         imageCaption.contentEditable = 'true';
 

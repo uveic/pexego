@@ -70,6 +70,7 @@ main {
 header {
   background-color: bisque;
   text-align: center;
+  margin: 0 0 2rem 0;
 }
 
 header > h1 {
@@ -81,7 +82,7 @@ header > h1 {
 }
 
 header > p {
-  padding: 0 2rem 3rem;
+  padding: 0.5rem 2rem 2rem;
   line-height: 1;
   color: brown;
   margin: 0;
