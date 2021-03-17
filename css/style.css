@@ -70,7 +70,6 @@ main {
 header {
   background-color: bisque;
   text-align: center;
-  margin: 0 0 2rem 0;
 }
 
 header > h1 {
@@ -91,4 +90,9 @@ header > p {
 header > p.peach {
   font-size: 5rem;
   padding: 3rem 2rem 1rem;
+}
+
+.article-tools {
+  text-align: center;
+  padding: 2rem;
 }

@@ -66,9 +66,10 @@
 
 .pexego-actionbar {
   order: 1;
-  border: 1px solid var(--highlight-color);
+  border: 1px solid transparent;
   border-bottom: none;
-  display: none;
+  display: flex;
+  margin-top: 1rem;
 }
 
 .pexego-actionbar-right,
@@ -103,7 +104,9 @@
 }
 
 .pexego-content-paragraph:focus + .pexego-actionbar {
-  display: flex;
+  border-top: 1px solid var(--highlight-color);
+  border-right: 1px solid var(--highlight-color);
+  border-left: 1px solid var(--highlight-color);
 }
 
 .pexego-add-sections {
@@ -150,6 +153,12 @@
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
+}
+
+.pexego-section-wrapper-border {
+  border: 1px solid var(--border-color);
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 .pexego-section-controls {

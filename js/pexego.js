@@ -2,65 +2,57 @@ import {global} from "./localisation.js";
 import {uploadImage} from "./imageUploader.js";
 
 const userFeedbackBubble = document.querySelector('#feedback');
-const defaultParagraphSeparatorString = 'defaultParagraphSeparator';
-const formatBlock = 'formatBlock';
-const addEventListener = (parent, type, listener) => parent.addEventListener(type, listener);
-const appendChild = (parent, child) => parent.appendChild(child);
-const createElement = (tag) => document.createElement(tag);
-const queryCommandState = (command) => document.queryCommandState(command);
-const queryCommandValue = (command) => document.queryCommandValue(command);
-
 const exec = (command, value = null) => document.execCommand(command, false, value);
 
 const defaultActions = {
   bold: {
     icon: '<img src="/img/svg/text-bolder.svg" class="img-svg" title="' + global.get('editorBold') + '" alt="' + global.get('editorBold') + '">',
     title: global.get('editorBold'),
-    state: () => queryCommandState('bold'),
+    state: () => document.queryCommandState('bold'),
     result: () => exec('bold')
   },
   italic: {
     icon: '<img src="/img/svg/text-italic.svg" class="img-svg" title="' + global.get('editorItalic') + '" alt="' + global.get('editorItalic') + '">',
     title: global.get('editorItalic'),
-    state: () => queryCommandState('italic'),
+    state: () => document.queryCommandState('italic'),
     result: () => exec('italic')
   },
   underline: {
     icon: '<img src="/img/svg/text-underline.svg" class="img-svg" title="' + global.get('editorUnderline') + '" alt="' + global.get('editorUnderline') + '">',
     title: global.get('editorUnderline'),
-    state: () => queryCommandState('underline'),
+    state: () => document.queryCommandState('underline'),
     result: () => exec('underline')
   },
   strikethrough: {
     icon: '<img src="/img/svg/text-strikethrough.svg" class="img-svg" title="' + global.get('editorStrikeThrough') + '" alt="' + global.get('editorStrikeThrough') + '">',
     title: global.get('editorStrikeThrough'),
-    state: () => queryCommandState('strikeThrough'),
+    state: () => document.queryCommandState('strikeThrough'),
     result: () => exec('strikeThrough')
   },
   heading1: {
     icon: 'H1',
     title: global.get('editorHeading1'),
-    result: () => exec(formatBlock, '<h1>')
+    result: () => exec('formatBlock', '<h1>')
   },
   heading2: {
     icon: 'H2',
     title: global.get('editorHeading2'),
-    result: () => exec(formatBlock, '<h2>')
+    result: () => exec('formatBlock', '<h2>')
   },
   heading3: {
     icon: 'H3',
     title: global.get('editorHeading3'),
-    result: () => exec(formatBlock, '<h3>')
+    result: () => exec('formatBlock', '<h3>')
   },
   paragraph: {
     icon: '&#182;',
     title: global.get('editorParagraph'),
-    result: () => exec(formatBlock, '<p>')
+    result: () => exec('formatBlock', '<p>')
   },
   quote: {
     icon: '&#8220; &#8221;',
     title: global.get('editorQuote'),
-    result: () => exec(formatBlock, '<blockquote>')
+    result: () => exec('formatBlock', '<blockquote>')
   },
   olist: {
     icon: '<img src="/img/svg/list-numbers.svg" class="img-svg" title="' + global.get('editorOrderedList') + '" alt="' + global.get('editorOrderedList') + '">',
@@ -75,7 +67,7 @@ const defaultActions = {
   code: {
     icon: '&lt;/&gt;',
     title: global.get('editorCode'),
-    result: () => exec(formatBlock, '<pre>')
+    result: () => exec('formatBlock', '<pre>')
   },
   line: {
     icon: '&#8213;',
@@ -121,6 +113,7 @@ const classes = {
   sectionControlsButtonDown: 'pexego-section-button-down',
   sectionControlsButtonDelete: 'pexego-section-button-delete',
   sectionWrapper: 'pexego-section-wrapper',
+  sectionWrapperBorder: 'pexego-section-wrapper-border',
   sectionTitle: 'pexego-section-title',
   sectionSubtitle: 'pexego-section-subtitle',
   sectionParagraph: 'pexego-section-paragraph',
@@ -147,18 +140,20 @@ const init = function(settings) {
     )
     : Object.keys(defaultActions).map(action => defaultActions[action]);
 
-  const defaultParagraphSeparator = settings[defaultParagraphSeparatorString] || 'div';
+  const mainContainer = settings.mainContainer;
+  const defaultParagraphSeparator = settings.defaultParagraphSeparator ?? 'p';
 
-  let content = settings.element.querySelector('.' + classes.contentParagraph);
+  let content = mainContainer.querySelector('.' + classes.contentParagraph);
   if (!content) {
     let content = document.createElement('div');
     content.className = 'placeholder ' + classes.contentParagraph;
     content.contentEditable = 'true';
     content.dataset.placeholder = global.get('editorParagraphPlaceholder');
   }
+
   content.oninput = ({target: {firstChild}}) => {
-    if (firstChild && firstChild.nodeType === 3) {
-      exec(formatBlock, `<${defaultParagraphSeparator}>`);
+    if (firstChild && firstChild.nodeType === Node.TEXT_NODE) {
+      exec('formatBlock', `<${defaultParagraphSeparator}>`);
     } else if (content.innerHTML === '<br>') {
       content.innerHTML = '';
     }
@@ -166,25 +161,25 @@ const init = function(settings) {
   };
 
   content.onkeydown = (event) => {
-    if (event.key === 'Enter' && queryCommandValue(formatBlock) === 'blockquote') {
-      setTimeout(() => exec(formatBlock, `<${defaultParagraphSeparator}>`), 0);
+    if (event.key === 'Enter' && document.queryCommandValue('formatBlock') === 'blockquote') {
+      setTimeout(() => exec('formatBlock', `<${defaultParagraphSeparator}>`), 0);
     }
   };
-  appendChild(settings.element, content);
+  mainContainer.appendChild(content);
 
-  const actionbarWrapper = createElement('div');
+  const actionbarWrapper = document.createElement('div');
   actionbarWrapper.className = classes.actionBar;
 
-  const actionbarLeft = createElement('div');
+  const actionbarLeft = document.createElement('div');
   actionbarLeft.className = classes.actionBarLeft;
-  appendChild(actionbarWrapper, actionbarLeft);
-  const actionbarRight = createElement('div');
+  actionbarWrapper.appendChild(actionbarLeft);
+  const actionbarRight = document.createElement('div');
   actionbarRight.className = classes.actionBarRight;
-  appendChild(actionbarWrapper, actionbarRight);
-  appendChild(settings.element, actionbarWrapper);
+  actionbarWrapper.appendChild(actionbarRight);
+  mainContainer.appendChild(actionbarWrapper);
 
   actions.forEach(action => {
-    const button = createElement('button');
+    const button = document.createElement('button');
     button.className = classes.actionBarButton;
     button.innerHTML = action.icon;
     button.title = action.title;
@@ -192,20 +187,23 @@ const init = function(settings) {
     button.onclick = (e) => action.result(e) && content.focus();
 
     if (action.state) {
-      const handler = () => button.classList[action.state() ? 'add' : 'remove'](classes.actionBarButtonSelected);
-      addEventListener(content, 'keyup', handler);
-      addEventListener(content, 'mouseup', handler);
-      addEventListener(button, 'click', handler);
+      const handler = action.state
+        ? () => button.classList.add(classes.actionBarButtonSelected)
+        : () => button.classList.remove(classes.actionBarButtonSelected);
+
+      content.addEventListener('keyup', handler);
+      content.addEventListener('mouseup', handler);
+      button.addEventListener('click', handler);
     }
 
     action.positionRight
-      ? appendChild(actionbarRight, button)
-      : appendChild(actionbarLeft, button);
+      ? actionbarRight.appendChild(button)
+      : actionbarLeft.appendChild(button);
   });
 
-  exec(defaultParagraphSeparatorString, defaultParagraphSeparator);
+  exec('defaultParagraphSeparator', defaultParagraphSeparator);
 
-  return settings.element;
+  return mainContainer;
 };
 
 const loadEditor = (containerId) => {
@@ -219,9 +217,9 @@ const loadEditor = (containerId) => {
   }
 
   init({
-    element: container,
+    mainContainer: container,
     onChange: (html) => {containerHtml.textContent = html},
-    defaultParagraphSeparator: 'p',
+    defaultParagraphSeparator: null,
     actions: [
       'bold',
       'italic',
@@ -453,7 +451,9 @@ document.querySelectorAll('.pexego-add-section-paragraph').forEach(bu => {
     ) {
       let id = existingSections[existingSections.length - 1].dataset.sectionId
         ?? existingSections[existingSections.length - 1].dataset.editorId;
-      document.querySelector('.' + classes.sectionParagraph + '-' + id).focus();
+      document.querySelector('#' + classes.sectionParagraph + '-' + id)
+        .querySelector('.' + classes.contentParagraph)
+        .focus();
       return;
     }
 
@@ -623,24 +623,5 @@ document.querySelectorAll('.' + classes.sectionControlsButtonDown).forEach(el =>
 });
 
 document.querySelectorAll('.' + classes.sectionParagraph).forEach(s => loadEditor(s.id));
-
-document.querySelectorAll('.pexego-section-controls-button').forEach(bu => {
-  bu.addEventListener('click', e => {
-    e.preventDefault();
-
-    document.querySelectorAll('.' + classes.sectionControls).forEach(c => {
-      c.classList.toggle('null');
-    });
-  });
-});
-
-document.querySelectorAll('.pexego-preview').forEach(bu => {
-  bu.addEventListener('click', e => {
-    e.preventDefault();
-
-    document.querySelector('header').classList.toggle('null');
-    document.querySelector('.pexego-add-sections').classList.toggle('null');
-  });
-});
 
 export {classes, getSectionTypeIdFromClassList};
