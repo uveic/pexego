@@ -16,36 +16,25 @@
 
 <body>
   <header>
-    <p class="peach">🍑</p>
+    <div class="peach">🍑</div>
     <h1>Pexego Editor</h1>
     <p>Pexego is a lightweight WYSIWYG editor built with Vanilla JS.</p>
   </header>
   <main>
     <div class="article-tools">
-      <a href="#" class="pexego-section-controls-button" data-are-controls-active=""><img class="img-svg m-r-05" src="/img/svg/gear.svg" alt="Display controls">Display controls</a>
+      <a href="#" class="pexego-section-controls-button" data-are-controls-active="1"><img class="img-svg m-r-05" src="/img/svg/gear.svg" alt="Display controls">Close Controls</a>
       <a href="#" class="pexego-preview m-l-05" data-is-preview-active=""><img class="img-svg m-r-05" src="/img/svg/arrows-out-simple.svg" alt="Preview">Preview</a>
     </div>
     <article class="pexego-container"></article>
     <div class="pexego-container-output null"></div>
     <div class="pexego-output"></div>
     <div class="pexego-add-sections">
-      <div class="pexego-add-section-group">
-        <input class="null" type="file" id="pexego-add-image-input" name="pexego-add-image-input" multiple="" accept="image/*">
-        <label class="pexego-add-section-image pexego-add-section" for="pexego-add-image-input">
-          <img class="img-svg m-r-05" src="/img/svg/image.svg" alt="Add Image">Add Image
-        </label>
-        <button class="pexego-add-section pexego-add-section-video"><img class="img-svg m-r-05" src="/img/svg/youtube-logo.svg" alt="Add YouTube video">Add YouTuve video</button>
-      </div>
-      <div class="pexego-add-section-group">
-        <button class="pexego-add-section pexego-add-section-paragraph"><img class="img-svg m-r-05" src="/img/svg/article.svg"
-            alt="Add paragraph">Add paragraph</button>
-        <button class="pexego-add-section pexego-add-section-title"><img class="img-svg m-r-05" src="/img/svg/text-t.svg" alt="Add Title">Add Title</button>
-        <button class="pexego-add-section pexego-add-section-subtitle"><img class="img-svg m-r-05" src="/img/svg/text-t.svg"
-            alt="Add Subtitle">Add Subtitle</button>
-      </div>
-      <div class="pexego-add-section-group">
-        <button class="pexego-add-section pexego-add-section-html"><img class="img-svg m-r-05" src="/img/svg/code.svg" alt="Add HTML">Add HTML</button>
-      </div>
+      <button class="pexego-add-section pexego-add-section-paragraph"><img class="img-svg m-r-05" src="/img/svg/article.svg" alt="Add paragraph">Add paragraph</button>
+      <input class="null" type="file" id="pexego-add-image-input" name="pexego-add-image-input" multiple="" accept="image/*">
+      <label class="pexego-add-section-image pexego-add-section" for="pexego-add-image-input">
+        <img class="img-svg m-r-05" src="/img/svg/image.svg" alt="Add Image">Add Image
+      </label>
+      <button class="pexego-add-section pexego-add-section-video"><img class="img-svg m-r-05" src="/img/svg/youtube-logo.svg" alt="Add YouTube video">Add YouTuve video</button>
     </div>
   </main>
   <script type="module" src="/js/pexego.js"></script>

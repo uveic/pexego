@@ -82,14 +82,16 @@ header > h1 {
 
 header > p {
   padding: 0.5rem 2rem 2rem;
-  line-height: 1;
+  line-height: 1.8;
   color: brown;
   margin: 0;
 }
 
-header > p.peach {
+header > .peach {
   font-size: 5rem;
   padding: 3rem 2rem 1rem;
+  margin: 0;
+  line-height: 1;
 }
 
 .article-tools {

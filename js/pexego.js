@@ -1,6 +1,7 @@
 import {global} from "./localisation.js";
 import {uploadImage} from "./imageUploader.js";
 
+const displayControls = true;
 const userFeedbackBubble = document.querySelector('#feedback');
 const exec = (command, value = null) => document.execCommand(command, false, value);
 
@@ -100,6 +101,7 @@ const defaultActions = {
 };
 
 const classes = {
+  displayNone: 'null',
   actionBar: 'pexego-actionbar',
   actionBarLeft: 'pexego-actionbar-left',
   actionBarRight: 'pexego-actionbar-right',
@@ -114,6 +116,7 @@ const classes = {
   sectionControlsButtonDelete: 'pexego-section-button-delete',
   sectionWrapper: 'pexego-section-wrapper',
   sectionWrapperBorder: 'pexego-section-wrapper-border',
+  sectionWrapperType: 'pexego-section-wrapper-type',
   sectionTitle: 'pexego-section-title',
   sectionSubtitle: 'pexego-section-subtitle',
   sectionParagraph: 'pexego-section-paragraph',
@@ -168,7 +171,8 @@ const init = function(settings) {
   mainContainer.appendChild(content);
 
   const actionbarWrapper = document.createElement('div');
-  actionbarWrapper.className = classes.actionBar;
+  actionbarWrapper.className = classes.actionBar
+    + (displayControls ? '' : ' ' + classes.displayNone);
 
   const actionbarLeft = document.createElement('div');
   actionbarLeft.className = classes.actionBarLeft;
@@ -258,6 +262,30 @@ const getSectionTypeIdFromClassList = function(classList) {
   }
 
   return 0;
+};
+
+const getSectionTypeNameFromClassList = function(classList) {
+  if (classList.contains(classes.sectionParagraph)) {
+    return global.get('editorParagraph');
+  }
+
+  if (classList.contains(classes.sectionImage)) {
+    return global.get('globalImage');
+  }
+
+  if (classList.contains(classes.sectionVideo)) {
+    return global.get('globalVideo');
+  }
+
+  if (classList.contains(classes.sectionTitle)) {
+    return global.get('editorHeading1');
+  }
+
+  if (classList.contains(classes.sectionSubtitle)) {
+    return global.get('editorHeading2');
+  }
+
+  return '';
 };
 
 const generateRandomString = function(length = 10) {
@@ -355,10 +383,17 @@ const moveSectionDown = function(e, id) {
 const generateSectionWrapperFor = function(pexegoSectionElement, id) {
   const pexegoContent = document.querySelector('.' + classes.container);
 
+  const sectionWrapperClasses = classes.sectionWrapper
+    + (displayControls ? ' ' + classes.sectionWrapperBorder : '');
   let sectionWrapper = document.createElement('div');
   sectionWrapper.id = classes.sectionWrapper + '-' + id;
-  sectionWrapper.className = classes.sectionWrapper;
+  sectionWrapper.className = sectionWrapperClasses;
   sectionWrapper.dataset.sectionId = id;
+
+  let sectionWrapperType = document.createElement('div');
+  sectionWrapperType.className = classes.sectionWrapperType
+    + (displayControls ? '' : ' ' + classes.displayNone)
+  sectionWrapperType.textContent = getSectionTypeNameFromClassList(pexegoSectionElement.classList);
 
   let trashImg = new Image();
   trashImg.className = 'img-svg';
@@ -401,12 +436,14 @@ const generateSectionWrapperFor = function(pexegoSectionElement, id) {
 
   let sectionControlDiv = document.createElement('div');
   sectionControlDiv.id = classes.sectionControls + '-' + id;
-  sectionControlDiv.className = classes.sectionControls + ' null';
+  sectionControlDiv.className = classes.sectionControls
+    + (displayControls ? '' : ' ' + classes.displayNone);
 
   sectionControlDiv.appendChild(moveUpButton);
   sectionControlDiv.appendChild(moveDownButton);
   sectionControlDiv.appendChild(deleteButton);
 
+  sectionWrapper.appendChild(sectionWrapperType);
   sectionWrapper.appendChild(pexegoSectionElement);
   sectionWrapper.appendChild(sectionControlDiv);
 
@@ -421,9 +458,9 @@ const displayUpAndDownArrowsWhenAppropriate = function() {
 
   arrowDownAll.forEach(d => {
     if (arrowDownAll.length && count !== arrowDownAll.length - 1) {
-      d.classList.remove('null');
+      d.classList.remove(classes.displayNone);
     } else {
-      d.classList.add('null');
+      d.classList.add(classes.displayNone);
     }
     count++;
   });
@@ -433,9 +470,9 @@ const displayUpAndDownArrowsWhenAppropriate = function() {
   count = 0;
   arrowUpAll.forEach(u => {
     if (arrowUpAll.length && count !== 0) {
-      u.classList.remove('null');
+      u.classList.remove(classes.displayNone);
     } else {
-      u.classList.add('null');
+      u.classList.add(classes.displayNone);
     }
     count++;
   });
