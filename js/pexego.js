@@ -1,7 +1,6 @@
 import {global} from "./localisation.js";
 import {uploadImage} from "./imageUploader.js";
 
-const displayControls = true;
 const userFeedbackBubble = document.querySelector('#feedback');
 const exec = (command, value = null) => document.execCommand(command, false, value);
 
@@ -115,8 +114,6 @@ const classes = {
   sectionControlsButtonDown: 'pexego-section-button-down',
   sectionControlsButtonDelete: 'pexego-section-button-delete',
   sectionWrapper: 'pexego-section-wrapper',
-  sectionWrapperBorder: 'pexego-section-wrapper-border',
-  sectionWrapperType: 'pexego-section-wrapper-type',
   sectionTitle: 'pexego-section-title',
   sectionSubtitle: 'pexego-section-subtitle',
   sectionParagraph: 'pexego-section-paragraph',
@@ -151,7 +148,6 @@ const init = function(settings) {
     let content = document.createElement('div');
     content.className = 'placeholder ' + classes.contentParagraph;
     content.contentEditable = 'true';
-    content.dataset.placeholder = global.get('editorParagraphPlaceholder');
   }
 
   content.oninput = ({target: {firstChild}}) => {
@@ -171,8 +167,7 @@ const init = function(settings) {
   mainContainer.appendChild(content);
 
   const actionbarWrapper = document.createElement('div');
-  actionbarWrapper.className = classes.actionBar
-    + (displayControls ? '' : ' ' + classes.displayNone);
+  actionbarWrapper.className = classes.actionBar + ' ' + classes.displayNone;
 
   const actionbarLeft = document.createElement('div');
   actionbarLeft.className = classes.actionBarLeft;
@@ -240,30 +235,6 @@ const loadEditor = (containerId) => {
   });
 }
 
-const getSectionTypeIdFromClassList = function(classList) {
-  if (classList.contains(classes.sectionParagraph)) {
-    return 1;
-  }
-
-  if (classList.contains(classes.sectionImage)) {
-    return 2;
-  }
-
-  if (classList.contains(classes.sectionVideo)) {
-    return 3;
-  }
-
-  if (classList.contains(classes.sectionTitle)) {
-    return 4;
-  }
-
-  if (classList.contains(classes.sectionSubtitle)) {
-    return 5;
-  }
-
-  return 0;
-};
-
 const getSectionTypeNameFromClassList = function(classList) {
   if (classList.contains(classes.sectionParagraph)) {
     return global.get('editorParagraph');
@@ -302,12 +273,37 @@ const insertAfter = (el, referenceNode) => {
   referenceNode.parentNode.insertBefore(el, referenceNode.nextSibling);
 };
 
-const managePlaceholderForEditableElements = (event) => {
+const displayActionBar = (event) => {
   const element = event.currentTarget;
-  if (!element.textContent.trim().length) {
-    element.innerHTML = '';
+  if (element.contentEditable === 'false') {
+    return;
   }
-}
+
+  const sectionWrapper = element.parentNode.parentNode;
+  const actionBar = sectionWrapper.querySelector('.' + classes.actionBar);
+  const selectedText = window.getSelection().toString().trim();
+
+  if (!selectedText.length) {
+    actionBar.classList.add(classes.displayNone);
+    return;
+  }
+
+  const top = event.clientY - element.getBoundingClientRect().top - 60;
+  actionBar.style.top = top + 'px';
+  actionBar.classList.remove(classes.displayNone);
+};
+
+const displayPlaceholder = (event) => {
+  const element = event.currentTarget;
+  const content = element.textContent.trim();
+
+  if (content.length) {
+    element.innerHTML = '<p>' + element.dataset.placeholder + '</p>';
+    element.classList.add('pexego-section-text-placeholder');
+  } else {
+    element.classList.remove('pexego-section-text-placeholder');
+  }
+};
 
 const getYoutubeVideoIdFromUrl = (url) => {
   const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
@@ -383,20 +379,14 @@ const moveSectionDown = function(e, id) {
 const generateSectionWrapperFor = function(pexegoSectionElement, id) {
   const pexegoContent = document.querySelector('.' + classes.container);
 
-  const sectionWrapperClasses = classes.sectionWrapper
-    + (displayControls ? ' ' + classes.sectionWrapperBorder : '');
+  const sectionWrapperClasses = classes.sectionWrapper;
   let sectionWrapper = document.createElement('div');
   sectionWrapper.id = classes.sectionWrapper + '-' + id;
   sectionWrapper.className = sectionWrapperClasses;
   sectionWrapper.dataset.sectionId = id;
 
-  let sectionWrapperType = document.createElement('div');
-  sectionWrapperType.className = classes.sectionWrapperType
-    + (displayControls ? '' : ' ' + classes.displayNone)
-  sectionWrapperType.textContent = getSectionTypeNameFromClassList(pexegoSectionElement.classList);
-
   let trashImg = new Image();
-  trashImg.className = 'img-svg';
+  trashImg.className = 'img-svg img-svg-35';
   trashImg.title = global.get('editorSectionRemove');
   trashImg.alt = global.get('editorSectionRemove');
   trashImg.src = '/img/svg/trash.svg';
@@ -409,7 +399,7 @@ const generateSectionWrapperFor = function(pexegoSectionElement, id) {
   deleteButton.appendChild(trashImg);
 
   let arrowUpImg = new Image();
-  arrowUpImg.className = 'img-svg';
+  arrowUpImg.className = 'img-svg img-svg-35';
   arrowUpImg.title = global.get('editorSectionMoveUp');
   arrowUpImg.alt = global.get('editorSectionMoveUp');
   arrowUpImg.src = '/img/svg/arrow-fat-up.svg';
@@ -422,7 +412,7 @@ const generateSectionWrapperFor = function(pexegoSectionElement, id) {
   moveUpButton.appendChild(arrowUpImg);
 
   let arrowDownImg = new Image();
-  arrowDownImg.className = 'img-svg';
+  arrowDownImg.className = 'img-svg img-svg-35';
   arrowDownImg.title = global.get('editorSectionMoveDown');
   arrowDownImg.alt = global.get('editorSectionMoveDown');
   arrowDownImg.src = '/img/svg/arrow-fat-down.svg';
@@ -436,14 +426,12 @@ const generateSectionWrapperFor = function(pexegoSectionElement, id) {
 
   let sectionControlDiv = document.createElement('div');
   sectionControlDiv.id = classes.sectionControls + '-' + id;
-  sectionControlDiv.className = classes.sectionControls
-    + (displayControls ? '' : ' ' + classes.displayNone);
+  sectionControlDiv.className = classes.sectionControls + ' ' + classes.displayNone;
 
   sectionControlDiv.appendChild(moveUpButton);
   sectionControlDiv.appendChild(moveDownButton);
   sectionControlDiv.appendChild(deleteButton);
 
-  sectionWrapper.appendChild(sectionWrapperType);
   sectionWrapper.appendChild(pexegoSectionElement);
   sectionWrapper.appendChild(sectionControlDiv);
 
@@ -511,6 +499,11 @@ document.querySelectorAll('.pexego-add-section-paragraph').forEach(bu => {
     divEditor.contentEditable = 'true';
     divEditor.dataset.placeholder = global.get('editorParagraphPlaceholder');
     divEditor.appendChild(document.createElement('p'));
+    divEditor.addEventListener('mouseup', displayActionBar);
+    divEditor.addEventListener('keyup', displayActionBar);
+    divEditor.addEventListener('focus', displayPlaceholder);
+    divEditor.addEventListener('blur', displayPlaceholder);
+
     pexegoSectionParagraph.appendChild(divEditor);
 
     generateSectionWrapperFor(pexegoSectionParagraph, id);
@@ -518,52 +511,6 @@ document.querySelectorAll('.pexego-add-section-paragraph').forEach(bu => {
 
     loadEditor(sectionId);
     divEditor.focus();
-  });
-});
-
-document.querySelectorAll('.pexego-add-section-title').forEach(bu => {
-  bu.addEventListener('click', (e) => {
-    e.preventDefault();
-
-    const id = generateRandomString(5);
-    const sectionId = classes.sectionTitle + '-' + id;
-
-    let pexegoSectionWrapper = document.createElement('section');
-    pexegoSectionWrapper.id = sectionId;
-    pexegoSectionWrapper.className =  classes.section + ' ' + classes.sectionTitle;
-
-    let pexegoSectionTitle = document.createElement('h1');
-    pexegoSectionTitle.className = classes.contentTitle + ' placeholder';
-    pexegoSectionTitle.dataset.placeholder = global.get('editorTitlePlaceholder');
-    pexegoSectionTitle.contentEditable = 'true';
-
-    pexegoSectionWrapper.appendChild(pexegoSectionTitle);
-    generateSectionWrapperFor(pexegoSectionWrapper, id);
-
-    document.querySelector('#' + sectionId + ' > h1').focus();
-  });
-});
-
-document.querySelectorAll('.pexego-add-section-subtitle').forEach(bu => {
-  bu.addEventListener('click', (e) => {
-    e.preventDefault();
-
-    const id = generateRandomString(5);
-    const sectionId = classes.sectionSubtitle + '-' + id;
-
-    let pexegoSectionWrapper = document.createElement('section');
-    pexegoSectionWrapper.id = sectionId;
-    pexegoSectionWrapper.className =  classes.section + ' ' + classes.sectionSubtitle;
-
-    let pexegoSectionSubtitle = document.createElement('h2');
-    pexegoSectionSubtitle.className = classes.contentSubtitle + ' placeholder';
-    pexegoSectionSubtitle.dataset.placeholder = global.get('editorSubtitlePlaceholder');
-    pexegoSectionSubtitle.contentEditable = 'true';
-
-    pexegoSectionWrapper.appendChild(pexegoSectionSubtitle);
-    generateSectionWrapperFor(pexegoSectionWrapper, id);
-
-    document.querySelector('#' + sectionId + ' > h2').focus();
   });
 });
 
@@ -599,13 +546,6 @@ document.querySelectorAll('.pexego-add-section-video').forEach(bu => {
   });
 });
 
-document.querySelectorAll('.pexego-add-section-html').forEach(bu => {
-  bu.addEventListener('click', (e) => {
-    e.preventDefault();
-    alert('ToDo');
-  });
-});
-
 document.querySelectorAll('input[name="pexego-add-image-input"]').forEach(pi => {
   pi.addEventListener('change', e => {
     e.preventDefault();
@@ -621,7 +561,6 @@ document.querySelectorAll('input[name="pexego-add-image-input"]').forEach(pi => 
       imageCaption.className = 'placeholder ' + classes.contentImageCaption;
       imageCaption.dataset.placeholder = global.get('editorImageCaptionPlaceholder');
       imageCaption.contentEditable = 'true';
-      imageCaption.addEventListener('focus', managePlaceholderForEditableElements);
 
       generateSectionWrapperFor(pexegoSectionImage, id);
 
@@ -643,10 +582,6 @@ document.querySelectorAll('input[name="pexego-add-image-input"]').forEach(pi => 
   });
 });
 
-document.querySelectorAll('.placeholder').forEach(el => {
-  el.addEventListener('focus', managePlaceholderForEditableElements);
-})
-
 document.querySelectorAll('.' + classes.sectionControlsButtonDelete).forEach(el => {
   el.addEventListener('click', e => removeSection(e, el.parentNode.parentNode.dataset.sectionId));
 });
@@ -661,4 +596,4 @@ document.querySelectorAll('.' + classes.sectionControlsButtonDown).forEach(el =>
 
 document.querySelectorAll('.' + classes.sectionParagraph).forEach(s => loadEditor(s.id));
 
-export {classes, getSectionTypeIdFromClassList};
+export {classes};
