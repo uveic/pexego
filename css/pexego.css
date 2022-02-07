@@ -62,8 +62,12 @@
 .pexego-content-image-caption {
   min-height: 30px;
   margin: 0;
-  padding: 0;
+  padding: 0 1rem;
   font-size: 0.9rem;
+}
+
+.pexego-content-image-caption + p {
+  margin-top: 0;
 }
 
 .pexego-actionbar {
@@ -196,17 +200,14 @@
 
 .pexego-section-video {
   position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
   overflow: hidden;
-  width: 100%;
 }
 
-.pexego-section-video::after {
-  display: block;
-  content: "";
-  padding-top: 56.25%;
-}
-
-.pexego-section-video iframe {
+.pexego-section-video iframe,
+.pexego-section-video object,
+.pexego-section-video embed {
   position: absolute;
   top: 0;
   left: 0;
