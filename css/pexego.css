@@ -66,10 +66,6 @@
   font-size: 0.9rem;
 }
 
-.pexego-content-image-caption + p {
-  margin-top: 0;
-}
-
 .pexego-actionbar {
   order: 1;
   display: flex;
@@ -184,14 +180,6 @@
 
 .placeholder:focus {
   outline: 0;
-}
-
-.placeholder:empty:before {
-  content: attr(data-placeholder);
-}
-
-.placeholder:empty:focus:before {
-  content: "";
 }
 
 .pexego-section-text-placeholder {

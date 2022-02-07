@@ -153,8 +153,8 @@ const init = function(settings) {
   content.oninput = ({target: {firstChild}}) => {
     if (firstChild && firstChild.nodeType === Node.TEXT_NODE) {
       exec('formatBlock', `<${defaultParagraphSeparator}>`);
-    } else if (content.innerHTML === '<br>') {
-      content.innerHTML = '';
+    } else if (content.textContent.trim().length === 0) {
+      content.innerHTML = '<p></p>';
     }
     settings.onChange(content.innerHTML);
   };
@@ -239,30 +239,6 @@ const loadEditor = (containerId) => {
     ]
   });
 }
-
-const getSectionTypeNameFromClassList = function(classList) {
-  if (classList.contains(classes.sectionParagraph)) {
-    return global.get('editorParagraph');
-  }
-
-  if (classList.contains(classes.sectionImage)) {
-    return global.get('globalImage');
-  }
-
-  if (classList.contains(classes.sectionVideo)) {
-    return global.get('globalVideo');
-  }
-
-  if (classList.contains(classes.sectionTitle)) {
-    return global.get('editorHeading1');
-  }
-
-  if (classList.contains(classes.sectionSubtitle)) {
-    return global.get('editorHeading2');
-  }
-
-  return '';
-};
 
 const generateRandomString = function(length = 10) {
   const dec2hex = function (dec) {
