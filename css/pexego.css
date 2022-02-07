@@ -25,8 +25,8 @@
   overflow-y: auto;
   font-family: inherit;
   height: auto;
-  padding: 0;
-  margin: 0 1rem;
+  padding: 0 1rem;
+  margin: 0;
   min-height: 55px;
 }
 
@@ -69,11 +69,17 @@
 .pexego-actionbar {
   order: 1;
   display: flex;
+  position: absolute;
+  left: 1rem;
+  margin-right: 1rem;
+  background-color: var(--light-bg-color);
+  border: 1px solid var(--light-bg-color-2);
 }
 
 .pexego-actionbar-right,
 .pexego-actionbar-left {
   display: flex;
+  flex-wrap: wrap;
   flex-grow: 1;
   align-items: stretch;
 }
@@ -99,7 +105,7 @@
 
 .pexego-actionbar-button:hover,
 .pexego-actionbar-button-selected {
-  background-color: var(--light-bg-color);
+  background-color: var(--light-bg-color-2);
 }
 
 .pexego-add-sections {
@@ -146,31 +152,20 @@
   flex-flow: row nowrap;
   align-items: center;
   position: relative;
-}
-
-.pexego-section-wrapper-border {
-  border: 1px solid var(--border-color);
-  margin-top: 2rem;
-  margin-bottom: 1rem;
-}
-
-.pexego-section-wrapper-type {
-  position: absolute;
-  top: -20px;
-  left: -1px;
-  background-color: var(--border-color);
-  color: var(--main-bg-color);
-  padding: 0.25rem;
-  font-size: 0.7rem;
-  line-height: 1;
+  border: 1px solid transparent;
 }
 
 .pexego-section-controls {
   display: flex;
-  flex-flow: column wrap;
-  flex-grow: 0;
-  flex-shrink: 0;
+  flex-flow: row wrap;
   justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.6);
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  top: 0;
 }
 
 .pexego-section-button {
@@ -189,11 +184,14 @@
 
 .placeholder:empty:before {
   content: attr(data-placeholder);
-  color: var(--light-bg-color-3);
 }
 
 .placeholder:empty:focus:before {
   content: "";
+}
+
+.pexego-section-text-placeholder {
+  color: var(--light-bg-color-3);
 }
 
 .pexego-section-video {
@@ -225,6 +223,11 @@ svg,
   height: auto;
   vertical-align: middle;
   margin: 0;
+}
+
+.img-svg-35 {
+  max-width: 35px;
+  max-height: 35px;
 }
 
 .m-l-05 {margin-left: 0.5rem !important;}
