@@ -215,6 +215,11 @@ const loadEditor = (containerId) => {
     return;
   }
 
+  container.querySelector('.' + classes.contentParagraph).addEventListener('mouseup', displayActionBar);
+  container.querySelector('.' + classes.contentParagraph).addEventListener('keyup', displayActionBar);
+  container.querySelector('.' + classes.contentParagraph).addEventListener('focus', displayPlaceholderFocus);
+  container.querySelector('.' + classes.contentParagraph).addEventListener('blur', displayPlaceholderBlur);
+
   init({
     mainContainer: container,
     onChange: (html) => {containerHtml.textContent = html},
@@ -293,15 +298,24 @@ const displayActionBar = (event) => {
   actionBar.classList.remove(classes.displayNone);
 };
 
-const displayPlaceholder = (event) => {
+const displayPlaceholderFocus = (event) => {
   const element = event.currentTarget;
   const content = element.textContent.trim();
 
-  if (content.length) {
+  element.classList.remove('pexego-section-text-placeholder');
+
+  if (content === element.dataset.placeholder) {
+    element.innerHTML = '<p></p>';
+  }
+};
+
+const displayPlaceholderBlur = (event) => {
+  const element = event.currentTarget;
+  const content = element.textContent.trim();
+
+  if (!content.length) {
     element.innerHTML = '<p>' + element.dataset.placeholder + '</p>';
     element.classList.add('pexego-section-text-placeholder');
-  } else {
-    element.classList.remove('pexego-section-text-placeholder');
   }
 };
 
@@ -499,10 +513,6 @@ document.querySelectorAll('.pexego-add-section-paragraph').forEach(bu => {
     divEditor.contentEditable = 'true';
     divEditor.dataset.placeholder = global.get('editorParagraphPlaceholder');
     divEditor.appendChild(document.createElement('p'));
-    divEditor.addEventListener('mouseup', displayActionBar);
-    divEditor.addEventListener('keyup', displayActionBar);
-    divEditor.addEventListener('focus', displayPlaceholder);
-    divEditor.addEventListener('blur', displayPlaceholder);
 
     pexegoSectionParagraph.appendChild(divEditor);
 
