@@ -1,12 +1,9 @@
 :root {
   --primary-color: #212529;
   --primary-bg-color: #fcfcfc;
+  --light-bg-color: #f0f0f0;
   --light-bg-color-2: #e8e8e8;
   --light-bg-color-3: #a6a6a6;
-
-  --highlight-color: #0432ff;
-  --border-color: #a6a6a6;
-  --light-bg-color: #f0f0f0;
 }
 
 *, *:before, *:after {
