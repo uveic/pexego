@@ -188,7 +188,7 @@ const init = function(settings) {
     button.setAttribute('type', 'button');
     button.addEventListener('click', (e) => {
       action.result(e);
-      setTimeout(() =>  content.focus(), 0);
+      setTimeout(() => content.focus(), 0);
     });
 
     if (action.state) {
@@ -294,8 +294,6 @@ const displayActionBar = (event) => {
 };
 
 const displayPlaceholderFocus = (event) => {
-  event.preventDefault();
-
   const element = event.currentTarget;
   const content = element.textContent.trim();
 
@@ -307,8 +305,6 @@ const displayPlaceholderFocus = (event) => {
 };
 
 const displayPlaceholderBlur = (event) => {
-  event.preventDefault();
-
   const element = event.currentTarget;
   const content = element.textContent.trim();
 
