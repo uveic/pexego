@@ -30,27 +30,27 @@ const defaultActions = {
     result: () => exec('strikeThrough')
   },
   heading1: {
-    icon: 'H1',
-    title: global.get('editorHeading1'),
+    icon: '<img src="/img/svg/text-h-one.svg" class="img-svg" title="' + global.get('editorHeadingOne') + '" alt="' + global.get('editorHeadingOne') + '">',
+    title: global.get('editorHeadingOne'),
     result: () => exec('formatBlock', '<h1>')
   },
   heading2: {
-    icon: 'H2',
-    title: global.get('editorHeading2'),
+    icon: '<img src="/img/svg/text-h-two.svg" class="img-svg" title="' + global.get('editorHeadingTwo') + '" alt="' + global.get('editorHeadingTwo') + '">',
+    title: global.get('editorHeadingTwo'),
     result: () => exec('formatBlock', '<h2>')
   },
   heading3: {
-    icon: 'H3',
-    title: global.get('editorHeading3'),
+    icon: '<img src="/img/svg/text-h-three.svg" class="img-svg" title="' + global.get('editorHeadingThree') + '" alt="' + global.get('editorHeadingThree') + '">',
+    title: global.get('editorHeadingThree'),
     result: () => exec('formatBlock', '<h3>')
   },
   paragraph: {
-    icon: '&#182;',
+    icon: '<img src="/img/svg/text-t.svg" class="img-svg" title="' + global.get('editorParagraph') + '" alt="' + global.get('editorParagraph') + '">',
     title: global.get('editorParagraph'),
     result: () => exec('formatBlock', '<p>')
   },
   quote: {
-    icon: '&#8220; &#8221;',
+    icon: '<img src="/img/svg/quotes.svg" class="img-svg" title="' + global.get('editorQuote') + '" alt="' + global.get('editorQuote') + '">',
     title: global.get('editorQuote'),
     result: () => exec('formatBlock', '<blockquote>')
   },
@@ -65,7 +65,7 @@ const defaultActions = {
     result: () => exec('insertUnorderedList')
   },
   code: {
-    icon: '&lt;/&gt;',
+    icon: '<img src="/img/svg/list-dashes.svg" class="img-svg" title="' + global.get('editorCode') + '" alt="' + global.get('editorCode') + '">',
     title: global.get('editorCode'),
     result: () => exec('formatBlock', '<pre>')
   },
@@ -91,19 +91,26 @@ const defaultActions = {
     }
   },
   eraser: {
-    icon: '<img src="/img/svg/x.svg" class="img-svg" title="' + global.get('editorClearFormat') + '" alt="' + global.get('editorClearFormat') + '">',
+    icon: '<img src="/img/svg/eraser.svg" class="img-svg" title="' + global.get('editorClearFormat') + '" alt="' + global.get('editorClearFormat') + '">',
     title: global.get('editorClearFormat'),
-    result: () => {
+    result: (e) => {
       exec('removeFormat');
+      document.getSelection().removeAllRanges();
+      e.target.parentNode.parentNode.classList.add(classes.displayNone);
     }
+  },
+  close: {
+    icon: '<img src="/img/svg/x.svg" class="img-svg" title="' + global.get('globalClose') + '" alt="' + global.get('globalClose') + '">',
+    title: global.get('globalClose'),
+    result: (e) => {
+      e.target.parentNode.parentNode.classList.add(classes.displayNone);
+    },
   }
 };
 
 const classes = {
   displayNone: 'null',
   actionBar: 'pexego-actionbar',
-  actionBarLeft: 'pexego-actionbar-left',
-  actionBarRight: 'pexego-actionbar-right',
   actionBarButton: 'pexego-actionbar-button',
   actionBarButtonSelected: 'pexego-button-selected',
   container: 'pexego-container',
@@ -117,6 +124,7 @@ const classes = {
   sectionTitle: 'pexego-section-title',
   sectionSubtitle: 'pexego-section-subtitle',
   sectionParagraph: 'pexego-section-paragraph',
+  sectionParagraphPlaceholder: 'pexego-section-paragraph-placeholder',
   sectionImage: 'pexego-section-image',
   sectionVideo: 'pexego-section-video',
   contentTitle: 'pexego-content-title',
@@ -146,36 +154,31 @@ const init = function(settings) {
   let content = mainContainer.querySelector('.' + classes.contentParagraph);
   if (!content) {
     let content = document.createElement('div');
-    content.className = 'placeholder ' + classes.contentParagraph;
+    content.className = classes.contentParagraph;
     content.contentEditable = 'true';
   }
 
-  content.oninput = ({target: {firstChild}}) => {
+  content.addEventListener('mouseup', displayActionBar);
+  content.addEventListener('keyup', displayActionBar);
+  content.addEventListener('focus', displayPlaceholderFocus);
+  content.addEventListener('blur', displayPlaceholderBlur);
+  content.addEventListener('touchend', displayPlaceholderBlur);
+  content.addEventListener('touchend', displayActionBar);
+
+  content.addEventListener('input', ({target: {firstChild}}) => {
     if (firstChild && firstChild.nodeType === Node.TEXT_NODE) {
       exec('formatBlock', `<${defaultParagraphSeparator}>`);
     } else if (content.textContent.trim().length === 0) {
       content.innerHTML = '<p></p>';
     }
     settings.onChange(content.innerHTML);
-  };
+  });
 
-  content.onkeydown = (event) => {
-    if (event.key === 'Enter' && document.queryCommandValue('formatBlock') === 'blockquote') {
-      setTimeout(() => exec('formatBlock', `<${defaultParagraphSeparator}>`), 0);
-    }
-  };
   mainContainer.appendChild(content);
 
-  const actionbarWrapper = document.createElement('div');
-  actionbarWrapper.className = classes.actionBar + ' ' + classes.displayNone;
-
-  const actionbarLeft = document.createElement('div');
-  actionbarLeft.className = classes.actionBarLeft;
-  actionbarWrapper.appendChild(actionbarLeft);
-  const actionbarRight = document.createElement('div');
-  actionbarRight.className = classes.actionBarRight;
-  actionbarWrapper.appendChild(actionbarRight);
-  mainContainer.appendChild(actionbarWrapper);
+  const actionBar = document.createElement('div');
+  actionBar.className = classes.actionBar + ' ' + classes.displayNone;
+  mainContainer.appendChild(actionBar);
 
   actions.forEach(action => {
     const button = document.createElement('button');
@@ -183,7 +186,10 @@ const init = function(settings) {
     button.innerHTML = action.icon;
     button.title = action.title;
     button.setAttribute('type', 'button');
-    button.onclick = (e) => action.result(e) && content.focus();
+    button.addEventListener('click', (e) => {
+      action.result(e);
+      setTimeout(() =>  content.focus(), 0);
+    });
 
     if (action.state) {
       const handler = action.state
@@ -195,9 +201,7 @@ const init = function(settings) {
       button.addEventListener('click', handler);
     }
 
-    action.positionRight
-      ? actionbarRight.appendChild(button)
-      : actionbarLeft.appendChild(button);
+    actionBar.appendChild(button);
   });
 
   exec('defaultParagraphSeparator', defaultParagraphSeparator);
@@ -215,11 +219,6 @@ const loadEditor = (containerId) => {
     return;
   }
 
-  container.querySelector('.' + classes.contentParagraph).addEventListener('mouseup', displayActionBar);
-  container.querySelector('.' + classes.contentParagraph).addEventListener('keyup', displayActionBar);
-  container.querySelector('.' + classes.contentParagraph).addEventListener('focus', displayPlaceholderFocus);
-  container.querySelector('.' + classes.contentParagraph).addEventListener('blur', displayPlaceholderBlur);
-
   init({
     mainContainer: container,
     onChange: (html) => {containerHtml.textContent = html},
@@ -231,11 +230,13 @@ const loadEditor = (containerId) => {
       'strikethrough',
       'heading1',
       'heading2',
+      'heading3',
       'paragraph',
       'olist',
       'ulist',
       'link',
-      'eraser'
+      'eraser',
+      'close',
     ]
   });
 }
@@ -254,6 +255,17 @@ const insertAfter = (el, referenceNode) => {
   referenceNode.parentNode.insertBefore(el, referenceNode.nextSibling);
 };
 
+const hideActionBar = () => {
+  const activeEl = document.activeElement;
+
+  document.querySelectorAll('.' + classes.sectionParagraph)
+    .forEach(el => {
+      if (!el.contains(activeEl)) {
+        el.querySelector('.' + classes.actionBar).classList.add(classes.displayNone);
+      }
+    });
+};
+
 const displayActionBar = (event) => {
   const element = event.currentTarget;
   if (element.contentEditable === 'false') {
@@ -269,16 +281,25 @@ const displayActionBar = (event) => {
     return;
   }
 
-  const top = event.clientY - element.getBoundingClientRect().top - 60;
-  actionBar.style.top = top + 'px';
+  const elPositionTop = element.getBoundingClientRect().top;
+  const mouseOrTouchPositionY = event.changedTouches
+    ? event.changedTouches[0].clientY
+    : event.clientY;
+
   actionBar.classList.remove(classes.displayNone);
+  const actionBarTopPosition = event.type === 'keyup'
+    ? -1 * actionBar.clientHeight
+    : mouseOrTouchPositionY - elPositionTop - actionBar.clientHeight - 30;
+  actionBar.style.top = actionBarTopPosition + 'px';
 };
 
 const displayPlaceholderFocus = (event) => {
+  event.preventDefault();
+
   const element = event.currentTarget;
   const content = element.textContent.trim();
 
-  element.classList.remove('pexego-section-text-placeholder');
+  element.classList.remove(classes.sectionParagraphPlaceholder);
 
   if (content === element.dataset.placeholder) {
     element.innerHTML = '<p></p>';
@@ -286,12 +307,14 @@ const displayPlaceholderFocus = (event) => {
 };
 
 const displayPlaceholderBlur = (event) => {
+  event.preventDefault();
+
   const element = event.currentTarget;
   const content = element.textContent.trim();
 
   if (!content.length) {
     element.innerHTML = '<p>' + element.dataset.placeholder + '</p>';
-    element.classList.add('pexego-section-text-placeholder');
+    element.classList.add(classes.sectionParagraphPlaceholder);
   }
 };
 
@@ -485,7 +508,7 @@ document.querySelectorAll('.pexego-add-section-paragraph').forEach(bu => {
     pexegoSectionParagraph.className =  classes.section + ' ' + classes.sectionParagraph;
 
     let divEditor = document.createElement('div');
-    divEditor.className = 'placeholder ' + classes.contentParagraph;
+    divEditor.className = classes.contentParagraph;
     divEditor.contentEditable = 'true';
     divEditor.dataset.placeholder = global.get('editorParagraphPlaceholder');
     divEditor.appendChild(document.createElement('p'));
@@ -504,7 +527,6 @@ document.querySelectorAll('.pexego-add-section-video').forEach(bu => {
   bu.addEventListener('click', (e) => {
     e.preventDefault();
 
-    // ToDo: Implement popup to get the video URL
     const videoUrl = window.prompt(global.get('editorVideoUrlTitle'));
     if (videoUrl) {
       const ytVideoId = getYoutubeVideoIdFromUrl(videoUrl);
@@ -543,10 +565,14 @@ document.querySelectorAll('input[name="pexego-add-image-input"]').forEach(pi => 
       let pexegoSectionImage = document.createElement('section');
       pexegoSectionImage.className =  classes.section + ' ' + classes.sectionImage;
 
-      let imageCaption = document.createElement('p');
-      imageCaption.className = 'placeholder ' + classes.contentImageCaption;
+      let imageCaption = document.createElement('div');
       imageCaption.dataset.placeholder = global.get('editorImageCaptionPlaceholder');
       imageCaption.contentEditable = 'true';
+      imageCaption.innerHTML = '<p>' + imageCaption.dataset.placeholder + '</p>';
+      imageCaption.classList.add(classes.contentImageCaption);
+      imageCaption.classList.add(classes.sectionParagraphPlaceholder);
+      imageCaption.addEventListener('focus', displayPlaceholderFocus);
+      imageCaption.addEventListener('blur', displayPlaceholderBlur);
 
       generateSectionWrapperFor(pexegoSectionImage, id);
 
@@ -581,5 +607,7 @@ document.querySelectorAll('.' + classes.sectionControlsButtonDown).forEach(el =>
 });
 
 document.querySelectorAll('.' + classes.sectionParagraph).forEach(s => loadEditor(s.id));
+
+document.body.addEventListener('click', hideActionBar);
 
 export {classes};

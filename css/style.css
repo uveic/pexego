@@ -98,3 +98,6 @@ header > .peach {
   text-align: center;
   padding: 2rem;
 }
+
+.m-l-05 {margin-left: 0.5rem !important;}
+.m-r-05 {margin-right: 0.5rem !important;}

@@ -12,9 +12,6 @@ document.querySelectorAll('.pexego-rearrange-sections-button').forEach(bu => {
       document.querySelectorAll('.' + classes.sectionControls).forEach(c => {
         c.classList.add(classes.displayNone);
       });
-      document.querySelectorAll('.' + classes.sectionWrapper).forEach(sw => {
-        sw.classList.remove(classes.sectionWrapperBorder)
-      });
       document.querySelector('.pexego-add-sections').classList.remove(classes.displayNone);
       document.querySelector('.pexego-preview').classList.remove(classes.displayNone);
     } else {
@@ -22,9 +19,6 @@ document.querySelectorAll('.pexego-rearrange-sections-button').forEach(bu => {
 
       document.querySelectorAll('.' + classes.sectionControls).forEach(c => {
         c.classList.remove(classes.displayNone);
-      });
-      document.querySelectorAll('.' + classes.sectionWrapper).forEach(sw => {
-        sw.classList.add(classes.sectionWrapperBorder)
       });
       document.querySelector('.pexego-add-sections').classList.add(classes.displayNone);
       document.querySelector('.pexego-preview').classList.add(classes.displayNone);
