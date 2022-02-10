@@ -471,53 +471,65 @@ const displayUpAndDownArrowsWhenAppropriate = function() {
   });
 };
 
+const addNewParagraph = (focus = false) => {
+  const existingSections = document.querySelectorAll('.' + classes.section);
+  if (existingSections.length &&
+    existingSections[existingSections.length - 1].classList.contains(classes.sectionParagraph)
+  ) {
+    let id = existingSections[existingSections.length - 1].dataset.sectionId
+      ?? existingSections[existingSections.length - 1].dataset.editorId;
+    const divEditor =document.querySelector('#' + classes.sectionParagraph + '-' + id)
+      .querySelector('.' + classes.contentParagraph);
+    divEditor.scrollIntoView();
+    divEditor.focus();
+    return;
+  }
+
+  const pexegoContentHtml = document.querySelector('.' + classes.container + '-output');
+  const id = generateRandomString(5);
+  const sectionId = classes.sectionParagraph + '-' + id;
+
+  let pexegoSectionParagraphHtml = document.createElement('div');
+  pexegoSectionParagraphHtml.id = sectionId + '-html';
+
+  let pexegoSectionParagraph = document.createElement('section');
+  pexegoSectionParagraph.id = sectionId;
+  pexegoSectionParagraph.dataset.editorId = id;
+  pexegoSectionParagraph.className =  classes.section + ' ' + classes.sectionParagraph;
+
+  let divEditor = document.createElement('div');
+  divEditor.contentEditable = 'true';
+  divEditor.spellcheck = true;
+  divEditor.autocapitalize = 'sentences';
+  divEditor.translate = false;
+  divEditor.role = 'textbox';
+  divEditor.ariaMultiline = 'true';
+
+  divEditor.classList.add(classes.contentParagraph);
+  divEditor.classList.add(classes.sectionParagraphPlaceholder);
+  divEditor.dataset.placeholder = global.get('editorParagraphPlaceholder');
+  let firstParagraph = document.createElement('p');
+  firstParagraph.textContent = global.get('editorParagraphPlaceholder');
+  divEditor.appendChild(firstParagraph);
+
+  pexegoSectionParagraph.appendChild(divEditor);
+
+  generateSectionWrapperFor(pexegoSectionParagraph, id);
+  pexegoContentHtml.appendChild(pexegoSectionParagraphHtml);
+
+  loadEditor(sectionId);
+
+  if (focus) {
+    divEditor.scrollIntoView();
+    divEditor.focus();
+  }
+};
+
 document.querySelectorAll('.pexego-add-section-paragraph').forEach(bu => {
   bu.addEventListener('click', (e) => {
     e.preventDefault();
 
-    const existingSections = document.querySelectorAll('.' + classes.section);
-    if (existingSections.length &&
-      existingSections[existingSections.length - 1].classList.contains(classes.sectionParagraph)
-    ) {
-      let id = existingSections[existingSections.length - 1].dataset.sectionId
-        ?? existingSections[existingSections.length - 1].dataset.editorId;
-      document.querySelector('#' + classes.sectionParagraph + '-' + id)
-        .querySelector('.' + classes.contentParagraph)
-        .focus();
-      return;
-    }
-
-    const pexegoContentHtml = document.querySelector('.' + classes.container + '-output');
-    const id = generateRandomString(5);
-    const sectionId = classes.sectionParagraph + '-' + id;
-
-    let pexegoSectionParagraphHtml = document.createElement('div');
-    pexegoSectionParagraphHtml.id = sectionId + '-html';
-
-    let pexegoSectionParagraph = document.createElement('section');
-    pexegoSectionParagraph.id = sectionId;
-    pexegoSectionParagraph.dataset.editorId = id;
-    pexegoSectionParagraph.className =  classes.section + ' ' + classes.sectionParagraph;
-
-    let divEditor = document.createElement('div');
-    divEditor.className = classes.contentParagraph;
-    divEditor.contentEditable = 'true';
-    divEditor.spellcheck = true;
-    divEditor.autocapitalize = 'sentences';
-    divEditor.translate = false;
-    divEditor.role = 'textbox';
-    divEditor.ariaMultiline = 'true';
-
-    divEditor.dataset.placeholder = global.get('editorParagraphPlaceholder');
-    divEditor.appendChild(document.createElement('p'));
-
-    pexegoSectionParagraph.appendChild(divEditor);
-
-    generateSectionWrapperFor(pexegoSectionParagraph, id);
-    pexegoContentHtml.appendChild(pexegoSectionParagraphHtml);
-
-    loadEditor(sectionId);
-    divEditor.focus();
+    addNewParagraph(true);
   });
 });
 
@@ -548,6 +560,7 @@ document.querySelectorAll('.pexego-add-section-video').forEach(bu => {
       pexegoSectionVideo.appendChild(iframeWrapper);
 
       generateSectionWrapperFor(pexegoSectionVideo, generateRandomString(5));
+      addNewParagraph();
     }
   });
 });
@@ -589,6 +602,8 @@ document.querySelectorAll('input[name="pexego-add-image-input"]').forEach(pi => 
         }
       );
     }
+
+    addNewParagraph();
   });
 });
 
