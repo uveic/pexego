@@ -189,34 +189,41 @@ img {
 
 .pexego-tools {
   display: flex;
-  gap: 1.5rem;
+  flex-flow: row nowrap;
   justify-content: space-between;
-  padding: 0.25rem 1rem;
+  margin: 0;
+  padding: 0;
   position: fixed;
   bottom: 0;
   right: 0;
   left: 0;
   z-index: 999;
-  background-color: var(--primary-bg-color);
+  background-color: transparent;
 }
 
 .pexego-section-add,
 .pexego-actions {
   display: flex;
   flex-shrink: 1;
-  flex-grow: 1;
+  flex-grow: 0;
   gap: 1rem;
   position: relative;
   align-items: center;
-  width: 100%;
+  margin: 0;
+  padding: 0.25rem 0;
+  background-color: var(--primary-bg-color);
 }
 
 .pexego-actions {
-  justify-content: right;
+  justify-content: flex-end;
+  padding-left: 0.25rem;
+  padding-right: 1rem;
 }
 
 .pexego-section-add {
-  justify-content: left;
+  justify-content: flex-start;
+  padding-right: 0.25rem;
+  padding-left: 1rem;
 }
 
 .pexego-add-section {
