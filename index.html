@@ -17,27 +17,48 @@
 
 <body>
   <header>
-    <div class="peach">🍑</div>
-    <h1>Pexego Editor</h1>
-    <p>Pexego is a lightweight WYSIWYG editor built with Vanilla JS.</p>
+    <div>
+      <h1><span class="peach">🍑</span>Pexego Editor</h1>
+      <p>Pexego is a lightweight WYSIWYG editor built with Vanilla JS.</p>
+    </div>
   </header>
   <main>
-    <div class="article-tools">
-      <a href="#" class="pexego-rearrange-sections-button" data-are-controls-active=""><img class="img-svg m-r-05" src="/img/svg/gear.svg" alt="Rearrange Sections">Rearrange Sections</a>
-      <a href="#" class="pexego-preview m-l-05" data-is-preview-active=""><img class="img-svg m-r-05" src="/img/svg/arrows-out-simple.svg" alt="Preview">Preview</a>
-    </div>
-    <article class="pexego-container"></article>
-    <div class="pexego-container-output null"></div>
-    <div class="pexego-output"></div>
-    <div class="pexego-add-sections">
-      <div class="pexego-add-section-group">
-        <button class="pexego-add-section pexego-add-section-paragraph"><img class="img-svg m-r-05" src="/img/svg/article.svg" alt="Add paragraph">Add paragraph</button>
+    <a href="#" class="pexego-preview-close null">
+      <img class="img-svg img-svg-30" src="/img/svg/arrows-in.svg" title="Close" alt="Close">
+    </a>
+    <a href="#" class="pexego-rearrange-close null">
+      <img class="img-svg img-svg-30" src="/img/svg/x.svg" title="Close" alt="Close">
+    </a>
+    <div class="pexego-tools">
+      <div class="pexego-section-add">
+        <span>Add:</span>
+        <a href="#" class="pexego-add-section pexego-add-section-paragraph">
+          <img class="img-svg img-svg-30" src="/img/svg/article.svg" alt="Add paragraph" title="Add paragraph">
+        </a>
         <input class="null" type="file" id="pexego-add-image-input" name="pexego-add-image-input" multiple="" accept="image/*">
         <label class="pexego-add-section-image pexego-add-section" for="pexego-add-image-input">
-          <img class="img-svg m-r-05" src="/img/svg/image.svg" alt="Add Image">Add Image
+          <img class="img-svg img-svg-30" src="/img/svg/image.svg" alt="Add Image" title="Add Image">
         </label>
-        <button class="pexego-add-section pexego-add-section-video"><img class="img-svg m-r-05" src="/img/svg/youtube-logo.svg" alt="Add YouTube video">Add YouTuve video</button>
+        <a href="#" class="pexego-add-section pexego-add-section-video">
+          <img class="img-svg img-svg-30" src="/img/svg/youtube-logo.svg" alt="Add YouTube video" title="Add YouTube video">
+        </a>
       </div>
+      <div class="pexego-actions">
+        <a href="#" class="pexego-rearrange-sections-button">
+          <img class="img-svg img-svg-30" src="/img/svg/arrows-down-up.svg" title="Rearrange sections" alt="Rearrange Sections">
+        </a>
+        <a href="#" class="pexego-preview">
+          <img class="img-svg img-svg-30" src="/img/svg/arrows-out.svg" alt="Full screen / Preview" title="Full screen / Preview">
+        </a>
+      </div>
+    </div>
+    <article class="pexego-container">
+      <section id="pexego-section-paragraph-3f29er96df32sd58sd74sd1" data-editor-id="3f29er96df32sd58sd74sd1" class="pexego-section pexego-section-paragraph">
+        <div class="pexego-content-paragraph pexego-section-paragraph-placeholder" data-placeholder="Type here..." spellcheck="true" autocapitalize="sentences" translate="no" role="textbox" aria-multiline="true" contenteditable="true"><p>Type here...</p></div>
+      </section>
+    </article>
+    <div class="pexego-container-output null">
+      <div id="pexego-section-paragraph-3f29er96df32sd58sd74sd1-html"></div>
     </div>
   </main>
   <script type="module" src="/js/pexego.js"></script>
